@@ -180,7 +180,7 @@ const handleAddItem = async () => {
                         <td>{i + 1}</td>
                         <td>{items[id].name}</td>
                         <td>{items[id].quantity}</td>
-                        <td>₹ {items[id].sales}</td>
+                        <td>{items[id].sales}</td>
                         <td>₹ {items[id].income}</td>
                         <td>₹ {items[id].price}</td>
                         <td>
