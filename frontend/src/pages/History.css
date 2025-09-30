@@ -1,0 +1,155 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.history-bg {
+  min-height: 100vh;
+  background: linear-gradient(to top, #cae6ff 0%, #67c4fd 100%);
+  width: 99vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 120px;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+
+.history-details-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70vw;
+}
+
+.history-details-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.history-details-col {
+  width: 48%;
+  font-size: 1.0rem;
+  line-height: 2;
+}
+
+.history-details-col div {
+  display: flex;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.history-details-col b {
+  width: 200px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-size: 16px;
+}
+
+.history-details-col span {
+  padding: 0 50px 0 0;
+  color: #2F3543;
+  font-weight: 600;
+}
+
+.history-value {
+  color: #16235e;
+  font-weight: 500;
+}
+
+.history-link {
+  color: #2E78FD;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.history-table-title {
+  margin: 15px 0px; 
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: black;
+}
+
+.history-table-container {
+  width: 80vw;
+  height: 70vh;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #111 transparent;
+  margin: 20px 0px;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.history-table {
+  width: 100%;
+  border-radius: 10px;
+  background: #fff;
+  border: none;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+  padding: 15px 40px;
+  height: 70vh;
+}
+
+.history-table th,
+.history-table td {
+  padding: 13px 18px;
+  text-align: left;
+  font-size: 1.06rem;
+}
+
+.history-table th {
+  color: black;
+  font-weight: 600;
+}
+
+.history-table tbody tr {
+  background: #fff;
+  border-bottom: 1px solid #e1e3f0;
+}
+
+.history-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.order-list-btn,
+.delivered-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 19px;
+  width: 150px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin: 2px 0;
+  background: #6f7fd9;
+  color: white;
+  font-weight: 500;
+  transition: background 0.18s;
+}
+
+.order-list-btn {
+  background: #6f7fd9;
+}
+
+.order-list-btn:hover {
+  background: #4961b5;
+}
+
+.delivered-btn {
+  background: #6f7fd9;
+}
+
+.delivered-btn:hover {
+  background: #4961b5;
+}
+
+
+
+
+

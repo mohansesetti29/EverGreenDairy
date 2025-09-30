@@ -1,0 +1,248 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, sans-serif;
+  background: linear-gradient(to top, #e0ecf7 0%, #67c4fd 100%);
+}
+.dashboard-bg {
+  min-height: 100vh;
+  background: linear-gradient(to top, #e0ecf7 0%, #67c4fd 100%);
+  padding-top: 120px;
+}
+.dashboard-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: transparent;
+  height: 600px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard-top {
+  border-radius: 18px;
+  height: 49%;
+  width: 100%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dashboard-summary {
+  width: 95%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard-summary-block {
+  width: 26%;
+  background: #f6fbff;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 32px 24px;
+  margin-right: 16px;
+}
+.dashboard-label {
+  font-size: 17px;
+  color: gray;
+  margin-bottom: 6px;
+}
+.dashboard-amount {
+  font-size: 28px;
+  color: black;
+  font-weight: 500;
+  margin-bottom: 21px;
+}
+.dashboard-sales-label {
+  font-size: 15px;
+  color: gray;
+  margin-bottom: 3px;
+}
+.dashboard-sales-amount {
+  font-size: 22px;
+  color: black;
+  font-weight: 500;
+  margin-bottom: 21px;
+}
+.dashboard-btn {
+  background: #67c4fd;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 18px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.dashboard-sales-graph {
+  width: 68%;
+  padding: 28px 9px;
+  border-radius: 16px;
+}
+.dashboard-sales-tabs {
+  display: flex;
+  gap: 22px;
+  font-size: 15px;
+  color: gray;
+  margin-bottom: 9px;
+}
+.active-tab {
+  color: black;
+  font-weight: 600;
+  border-bottom: 2px solid black;
+  padding-bottom: 2px;
+}
+.dashboard-sales-title {
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: black;
+}
+.dashboard-chart {
+  width: 310px;
+  height: 150px;
+}
+.dashboard-bottom {
+  border-radius: 18px;
+  height: 49%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dashboard-bottom-left {
+  border-radius: 18px;
+  background: #fff;
+  height: 100%;
+  width: 49%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 20px;
+}
+.dashboard-section-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: black;
+  margin-bottom: 18px;
+}
+.dashboard-bar-chart {
+  width: 400px;
+  height: 150px;
+  margin-top: 10px;
+}
+
+.dashboard-bottom-right {
+  border-radius: 18px;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.TopRatedItems {
+  border-radius: 18px;
+  background: #fff;
+  height: 100%;
+  width: 54%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.top-rated-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.top-rated-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 17px;
+}
+.top-rated-img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 13px;
+  border: 2px solid #cbe8fa;
+}
+.top-rated-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.top-rated-div {
+  display: flex;
+  flex-direction: row;
+  width: 180px;
+}
+.top-rated-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: black;
+  margin-bottom: 3px;
+}
+.top-rated-price {
+  font-size: 13px;
+  color: black;
+  margin-bottom: 1px;
+}
+.top-rated-rating {
+  font-size: 13px;
+  color: black;
+  font-weight: 500;
+}
+.Revenue {
+  border-radius: 18px;
+  background: #fff;
+  height: 100%;
+  width: 44%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.revenue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.revenue-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.revenue-name {
+  width: 70px;
+  font-size: 13px;
+  color: black;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.revenue-bar-bg {
+  background: #e6f5fd;
+  border-radius: 7px;
+  width: 60px;
+  height: 8px;
+  margin-right: 9px;
+  position: relative;
+}
+.revenue-bar {
+  height: 100%;
+  background: #67c4fd;
+  border-radius: 7px;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.revenue-value {
+  font-size: 13px;
+  color: black;
+  font-weight: 500;
+  margin-left: 3px;
+}
+
