@@ -25,7 +25,6 @@ const Home = () => {
   const [currentMonthSales, setCurrentMonthSales] = useState(0);
   const [activeTab, setActiveTab] = useState("Monthly");
   const [tabCategories, setTabCategories] = useState(categories);
-  const [allProducts, setAllProducts] = useState([]);
 
   const fetchImageUrl = async (imageId) => {
     try {
@@ -72,8 +71,8 @@ const Home = () => {
       setTabCategories(daysInWeek);
     } else if (tab === "Weekly") {
       dataPoints = weeksInMonth.map((weekLabel, i) => {
-        const weekStart = new Date(thisYear, thisMonth, i * 7 + 1);
-        const weekEnd = new Date(thisYear, thisMonth, (i + 1) * 7);
+        const weekStart = new Date(now.getFullYear(), now.getMonth(), i * 7 + 1);
+        const weekEnd = new Date(now.getFullYear(), now.getMonth(), (i + 1) * 7);
 
         const total = productsArray.reduce((acc, p) => {
           const pDate = new Date(p.createdAt || p.updatedAt || Date.now());
@@ -126,7 +125,6 @@ const Home = () => {
   useEffect(() => {
     const fetchProductStats = async () => {
       try {
-        setError(null);
         const response = await fetch(apiView, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -139,9 +137,6 @@ const Home = () => {
         }
 
         const productsArray = Object.values(data.data);
-        setAllProducts(productsArray);
-
-        // Fetch images
         const imageIdSet = new Set(productsArray.map(p => p.image).filter(Boolean));
         const urlsMapEntries = await Promise.all(
           Array.from(imageIdSet).map(async (imageId) => [imageId, await fetchImageUrl(imageId)])
@@ -171,17 +166,22 @@ const Home = () => {
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 5)
           .map(p => ({
-            id: p._id || p.name,
             name: p.name,
             value: p.sales || 0,
             img: urlsMap[p.image] || "",
           }));
 
-        const rated = sellings.map(p => ({
-          ...p,
-          price: productsArray.find(prod => prod.name === p.name)?.price || 0,
-          rating: productsArray.find(prod => prod.name === p.name)?.rating || 4.5, // fallback if no rating
-        }));
+        const rated = sellings
+          .slice()
+          .sort((a, b) => (b.value) - (a.value))
+          .slice(0, 5)
+          .map(p => ({
+            name: p.name,
+            type: "",
+            rating: Math.floor(Math.random() * 2) + 4 + 0.0,
+            price: productsArray.find(prod => prod.name === p.name)?.price || 0,
+            img: p.img || "",
+          }));
 
         const revenue = productsArray
           .sort((a, b) => (b.income || 0) - (a.income || 0))
@@ -200,10 +200,11 @@ const Home = () => {
         setTotalEarnings(earningsSum);
         setCurrentMonthSales(currentMonthSaleCount);
 
-        // Default: Monthly
-        setSalesData(aggregateSalesData(productsArray, "Monthly"));
+        const initialSalesData = aggregateSalesData(productsArray, 'Monthly');
+        setSalesData(initialSalesData);
+
+        setError(null);
       } catch (err) {
-        console.error(err);
         setError("Failed to load product data. Please try again later.");
       }
     };
@@ -212,14 +213,25 @@ const Home = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (allProducts.length > 0) {
-      const updatedSalesData = aggregateSalesData(allProducts, tab);
-      setSalesData(updatedSalesData);
-    }
+    fetchAndSetSales(tab);
   };
 
-  // --- dynamic scaling for charts ---
-  const maxSales = Math.max(...salesData, 1);
+  const fetchAndSetSales = (tab) => {
+    fetch(apiView, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.data || typeof data.data !== "object") throw new Error("Invalid data");
+        const productsArray = Object.values(data.data);
+        const updatedSalesData = aggregateSalesData(productsArray, tab);
+        setSalesData(updatedSalesData);
+      })
+      .catch(() => {
+        setError("Failed to load sales data for selected view");
+      });
+  };
 
   return (
     <div className="dashboard-bg">
@@ -253,12 +265,7 @@ const Home = () => {
                     fill="rgba(103,196,253,0.3)"
                     stroke="#45a9e3"
                     strokeWidth="3"
-                    points={salesData
-                      .map(
-                        (val, i) =>
-                          `${30 + i * 52},${150 - (val / maxSales) * 140}`
-                      )
-                      .join(" ")}
+                    points={salesData.map((val, i) => `${30 + i * 52},${150 - val / 160}`).join(" ")}
                   />
                   {tabCategories.map((cat, i) => (
                     <text key={cat} x={30 + i * 52} y="148" fontSize="12" textAnchor="middle">
@@ -281,16 +288,16 @@ const Home = () => {
                 <svg width={40 + topSellings.length * 80} height="180">
                   {topSellings.map((item, i) => (
                     <g
-                      key={item.id}
+                      key={item.name}
                       onMouseEnter={() => setHoveredBar(i)}
                       onMouseLeave={() => setHoveredBar(null)}
                       style={{ cursor: "pointer" }}
                     >
                       <rect
                         x={30 + i * 80}
-                        y={150 - (item.value / Math.max(...topSellings.map(s => s.value), 1)) * 140}
+                        y={150 - item.value / 2}
                         width="45"
-                        height={(item.value / Math.max(...topSellings.map(s => s.value), 1)) * 140}
+                        height={item.value / 2}
                         fill={hoveredBar === i ? "#1976d2ff" : "#2197f6"}
                         opacity={hoveredBar === i ? 0.9 : 1}
                       />
@@ -306,7 +313,7 @@ const Home = () => {
                       {hoveredBar === i && (
                         <text
                           x={50 + i * 80}
-                          y={140 - (item.value / Math.max(...topSellings.map(s => s.value), 1)) * 140}
+                          y={150 - item.value / 2 - 10}
                           fontSize="14"
                           fontWeight="bold"
                           fill="#000"
@@ -320,6 +327,7 @@ const Home = () => {
                   ))}
                 </svg>
               </div>
+
             )}
           </div>
 
@@ -330,8 +338,8 @@ const Home = () => {
                 <div className="error-message">{error}</div>
               ) : (
                 <ul className="top-rated-list">
-                  {topRated.map((item) => (
-                    <li className="top-rated-item" key={item.id}>
+                  {topRated.map((item, index) => (
+                    <li className="top-rated-item" key={item.name + index}>
                       <div className="top-rated-details">
                         <div className="top-rated-div">
                           <img
@@ -342,7 +350,7 @@ const Home = () => {
                           <div className="top-rated-name">{item.name}</div>
                         </div>
                         <div>
-                          <div className="top-rated-price">₹{item.price}</div>
+                          <div className="top-rated-price">{item.price}</div>
                           <div className="top-rated-rating">{item.rating.toFixed(1)}</div>
                         </div>
                       </div>
@@ -360,24 +368,15 @@ const Home = () => {
                 <ul className="revenue-list">
                   {revenueProducts.map((item) => (
                     <li className="revenue-item" key={item.id}>
-                      <div className="revenue-name">
-                        {item.name}
-                        <br />({item.quantity})
-                      </div>
+                      <div className="revenue-name">{item.name}<br />({item.quantity})</div>
                       <div className="revenue-bar-bg">
                         <div
                           className="revenue-bar"
-                          style={{
-                            width: `${
-                              (item.value /
-                                Math.max(...revenueProducts.map(r => r.value), 1)) *
-                              100
-                            }%`,
-                          }}
+                          style={{ width: `${(item.value / (revenueProducts[0]?.value || 1)) * 100}%` }}
                           aria-label={`${item.name} revenue bar`}
                         />
                       </div>
-                      <div className="revenue-value">₹{item.value}</div>
+                      <div className="revenue-value">{item.value}</div>
                     </li>
                   ))}
                 </ul>
@@ -391,3 +390,6 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
