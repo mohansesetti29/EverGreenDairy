@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import "./Home.css";
 import "../components/Header.css";
@@ -11,10 +12,11 @@ const categories = [
 ];
 
 const daysInWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const weeksInMonth = ["Wk1", "Wk2", "Wk3", "Wk4"];
+const weeksInMonth = ["Wk1", "Wk2", "Wk3", "Wk4", "Wk5"];
 
 const Home = () => {
-  const [hoveredBar, setHoveredBar] = useState(null);
+  const [hoveredSalesIdx, setHoveredSalesIdx] = useState(null);
+  const [hoveredBarIdx, setHoveredBarIdx] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
   const [topSellings, setTopSellings] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -71,8 +73,8 @@ const Home = () => {
       setTabCategories(daysInWeek);
     } else if (tab === "Weekly") {
       dataPoints = weeksInMonth.map((weekLabel, i) => {
-        const weekStart = new Date(now.getFullYear(), now.getMonth(), i * 7 + 1);
-        const weekEnd = new Date(now.getFullYear(), now.getMonth(), (i + 1) * 7);
+        const weekStart = new Date(thisYear, thisMonth, i * 7 + 1, 0, 0, 0, 0);
+        const weekEnd = new Date(thisYear, thisMonth, (i + 1) * 7, 23, 59, 59, 999);
 
         const total = productsArray.reduce((acc, p) => {
           const pDate = new Date(p.createdAt || p.updatedAt || Date.now());
@@ -118,7 +120,6 @@ const Home = () => {
       });
       setTabCategories(years.map(String));
     }
-
     return dataPoints;
   };
 
@@ -267,6 +268,33 @@ const Home = () => {
                     strokeWidth="3"
                     points={salesData.map((val, i) => `${30 + i * 52},${150 - val / 160}`).join(" ")}
                   />
+                  {salesData.map((val, i) => (
+                    <circle
+                      key={`dot-${i}`}
+                      cx={30 + i * 52}
+                      cy={150 - val / 160}
+                      r="8"
+                      fill="transparent"
+                      onMouseEnter={() => setHoveredSalesIdx(i)}
+                      onMouseLeave={() => setHoveredSalesIdx(null)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  ))}
+                  {salesData.map((val, i) => (
+                    hoveredSalesIdx === i && (
+                      <text
+                        key={`label-${i}`}
+                        x={30 + i * 52}
+                        y={150 - val / 160 - 10}
+                        fontSize="14"
+                        fontWeight="bold"
+                        fill="#000"
+                        textAnchor="middle"
+                      >
+                        ₹ {val}
+                      </text>
+                    )
+                  ))}
                   {tabCategories.map((cat, i) => (
                     <text key={cat} x={30 + i * 52} y="148" fontSize="12" textAnchor="middle">
                       {cat}
@@ -289,8 +317,8 @@ const Home = () => {
                   {topSellings.map((item, i) => (
                     <g
                       key={item.name}
-                      onMouseEnter={() => setHoveredBar(i)}
-                      onMouseLeave={() => setHoveredBar(null)}
+                      onMouseEnter={() => setHoveredBarIdx(i)}
+                      onMouseLeave={() => setHoveredBarIdx(null)}
                       style={{ cursor: "pointer" }}
                     >
                       <rect
@@ -298,8 +326,8 @@ const Home = () => {
                         y={150 - item.value / 2}
                         width="45"
                         height={item.value / 2}
-                        fill={hoveredBar === i ? "#1976d2ff" : "#2197f6"}
-                        opacity={hoveredBar === i ? 0.9 : 1}
+                        fill={hoveredBarIdx === i ? "#1976d2ff" : "#2197f6"}
+                        opacity={hoveredBarIdx === i ? 0.9 : 1}
                       />
                       <text
                         x={55 + i * 80}
@@ -310,7 +338,7 @@ const Home = () => {
                       >
                         {item.name}
                       </text>
-                      {hoveredBar === i && (
+                      {hoveredBarIdx === i && (
                         <text
                           x={50 + i * 80}
                           y={150 - item.value / 2 - 10}
@@ -327,7 +355,6 @@ const Home = () => {
                   ))}
                 </svg>
               </div>
-
             )}
           </div>
 
@@ -390,6 +417,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
