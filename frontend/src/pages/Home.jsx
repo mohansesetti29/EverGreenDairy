@@ -11,10 +11,11 @@ const categories = [
 ];
 
 const daysInWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const weeksInMonth = ["Wk1", "Wk2", "Wk3", "Wk4"];
+const weeksInMonth = ["Wk1", "Wk2", "Wk3", "Wk4", "Wk5"];
 
 const Home = () => {
-  const [hoveredBar, setHoveredBar] = useState(null);
+  const [hoveredSalesIdx, setHoveredSalesIdx] = useState(null);
+  const [hoveredBarIdx, setHoveredBarIdx] = useState(null);
   const [imageUrls, setImageUrls] = useState({});
   const [topSellings, setTopSellings] = useState([]);
   const [topRated, setTopRated] = useState([]);
@@ -71,8 +72,8 @@ const Home = () => {
       setTabCategories(daysInWeek);
     } else if (tab === "Weekly") {
       dataPoints = weeksInMonth.map((weekLabel, i) => {
-        const weekStart = new Date(now.getFullYear(), now.getMonth(), i * 7 + 1);
-        const weekEnd = new Date(now.getFullYear(), now.getMonth(), (i + 1) * 7);
+        const weekStart = new Date(thisYear, thisMonth, i * 7 + 1, 0, 0, 0, 0);
+        const weekEnd = new Date(thisYear, thisMonth, (i + 1) * 7, 23, 59, 59, 999);
 
         const total = productsArray.reduce((acc, p) => {
           const pDate = new Date(p.createdAt || p.updatedAt || Date.now());
@@ -118,7 +119,6 @@ const Home = () => {
       });
       setTabCategories(years.map(String));
     }
-
     return dataPoints;
   };
 
@@ -267,6 +267,33 @@ const Home = () => {
                     strokeWidth="3"
                     points={salesData.map((val, i) => `${30 + i * 52},${150 - val / 160}`).join(" ")}
                   />
+                  {salesData.map((val, i) => (
+                    <circle
+                      key={`dot-${i}`}
+                      cx={30 + i * 52}
+                      cy={150 - val / 160}
+                      r="8"
+                      fill="transparent"
+                      onMouseEnter={() => setHoveredSalesIdx(i)}
+                      onMouseLeave={() => setHoveredSalesIdx(null)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  ))}
+                  {salesData.map((val, i) => (
+                    hoveredSalesIdx === i && (
+                      <text
+                        key={`label-${i}`}
+                        x={30 + i * 52}
+                        y={150 - val / 160 - 10}
+                        fontSize="14"
+                        fontWeight="bold"
+                        fill="#000"
+                        textAnchor="middle"
+                      >
+                        ₹ {val}
+                      </text>
+                    )
+                  ))}
                   {tabCategories.map((cat, i) => (
                     <text key={cat} x={30 + i * 52} y="148" fontSize="12" textAnchor="middle">
                       {cat}
@@ -289,8 +316,8 @@ const Home = () => {
                   {topSellings.map((item, i) => (
                     <g
                       key={item.name}
-                      onMouseEnter={() => setHoveredBar(i)}
-                      onMouseLeave={() => setHoveredBar(null)}
+                      onMouseEnter={() => setHoveredBarIdx(i)}
+                      onMouseLeave={() => setHoveredBarIdx(null)}
                       style={{ cursor: "pointer" }}
                     >
                       <rect
@@ -298,8 +325,8 @@ const Home = () => {
                         y={150 - item.value / 2}
                         width="45"
                         height={item.value / 2}
-                        fill={hoveredBar === i ? "#1976d2ff" : "#2197f6"}
-                        opacity={hoveredBar === i ? 0.9 : 1}
+                        fill={hoveredBarIdx === i ? "#1976d2ff" : "#2197f6"}
+                        opacity={hoveredBarIdx === i ? 0.9 : 1}
                       />
                       <text
                         x={55 + i * 80}
@@ -310,7 +337,7 @@ const Home = () => {
                       >
                         {item.name}
                       </text>
-                      {hoveredBar === i && (
+                      {hoveredBarIdx === i && (
                         <text
                           x={50 + i * 80}
                           y={150 - item.value / 2 - 10}
@@ -327,7 +354,6 @@ const Home = () => {
                   ))}
                 </svg>
               </div>
-
             )}
           </div>
 
@@ -390,202 +416,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import "./Home.css";
-// import "../components/Header.css";
-// import Header from "../components/Header.jsx";
-
-// const api = "https://cube-backend-service.onrender.com/api/products";
-// const productId = "7660dfaf-07eb-4d72-8dfd-cb4df8be3a90";
-
-// const salesData = [80, 100, 70, 90, 60, 95, 102, 120, 143, 154];
-// const categories = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-// const topSellings = [
-//   { name: "Kova", value: 8500 },
-//   { name: "Pot Curd", value: 10000 },
-//   { name: "Curd Rice", value: 7000 },
-//   { name: "Ghee", value: 6500 },
-//   { name: "Biscuits", value: 8500 }
-// ];
-
-// const revenueProducts = [
-//   { name: "Ghee", value: 15255 },
-//   { name: "Pot Curd", value: 14587 },
-//   { name: "Curd Rice", value: 55467 },
-//   { name: "Rasgulla", value: 12423 },
-//   { name: "Kova", value: 17453 },
-//   { name: "Biscuits", value: 6463 }
-// ];
-
-// const Home = () => {
-//   const [imageUrl, setImageUrl] = useState("");
-
-//   useEffect(() => {
-//     const fetchProductImageUrl = async (prodId) => {
-//       try {
-//         const response = await fetch(api + "/getImage", {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ "imageId": prodId }),
-//         });
-//         if (!response.ok) throw new Error("Failed to fetch product image URL");
-//         const data = await response.json();
-//         setImageUrl(data.signedUrl);
-//       } catch (error) {
-//         console.error(error);
-//       }
-//     };
-
-//     fetchProductImageUrl(productId);
-//   }, []);
-
-//   const topRated = [
-//     {
-//       name: "Curd Rice",
-//       type: "curd rice",
-//       rating: 4.8,
-//       price: 1525,
-//       img: imageUrl,
-//     },
-//     {
-//       name: "Pot Curd",
-//       type: "pot curd",
-//       rating: 4.6,
-//       price: 1525,
-//       img: "https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg",
-//     },
-//     {
-//       name: "Ghee",
-//       type: "ghee",
-//       rating: 4.5,
-//       price: 1525,
-//       img: "https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg",
-//     },
-//     {
-//       name: "Ghee",
-//       type: "ghee",
-//       rating: 4.5,
-//       price: 1525,
-//       img: "https://images.pexels.com/photos/461382/pexels-photo-461382.jpeg",
-//     },
-//   ];
-
-//   return (
-//     <div className="dashboard-bg">
-//       <Header />
-//       <div className="dashboard-container">
-//         <div className="dashboard-top">
-//           <div className="dashboard-summary">
-//             <div className="dashboard-summary-block">
-//               <div className="dashboard-label">Total Earnings</div>
-//               <div className="dashboard-amount">₹ 556823</div>
-//               <div className="dashboard-sales-label">Current Month Sales</div>
-//               <div className="dashboard-sales-amount">168</div>
-//               <button className="dashboard-btn">See Full Details</button>
-//             </div>
-//             <div className="dashboard-sales-graph">
-//               <div className="dashboard-sales-tabs">
-//                 <span>Daily</span>
-//                 <span>Weekly</span>
-//                 <span className="active-tab">Monthly</span>
-//                 <span>Yearly</span>
-//               </div>
-//               <div className="dashboard-sales-title">View Sales</div>
-//               <div className="dashboard-chart">
-//                 <svg width="620" height="150">
-//                   <polyline
-//                     fill="rgba(103,196,253,0.3)"
-//                     stroke="#45a9e3"
-//                     strokeWidth="3"
-//                     points={salesData.map((val, i) => `${30 + i * 52},${150 - val}`).join(" ")}
-//                   />
-//                   {categories.map((cat, i) => (
-//                     <text key={cat} x={30 + i * 52} y="148" fontSize="12" textAnchor="middle">
-//                       {cat}
-//                     </text>
-//                   ))}
-//                 </svg>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//         <div className="dashboard-bottom">
-//           <div className="dashboard-bottom-left">
-//             <div className="dashboard-section-title">Top Sellings This Month</div>
-//             <div className="dashboard-bar-chart">
-//               <svg width="320" height="150">
-//                 {topSellings.map((item, i) => (
-//                   <rect
-//                     key={item.name}
-//                     x={30 + i * 52}
-//                     y={150 - item.value / 160}
-//                     width="38"
-//                     height={item.value / 160}
-//                     fill="#67c4fd"
-//                   />
-//                 ))}
-//                 {topSellings.map((item, i) => (
-//                   <text
-//                     key={"label-" + item.name + i}
-//                     x={49 + i * 52}
-//                     y="148"
-//                     fontSize="12"
-//                     textAnchor="middle"
-//                   >
-//                     {item.name}
-//                   </text>
-//                 ))}
-//               </svg>
-//             </div>
-//           </div>
-//           <div className="dashboard-bottom-right">
-//             <div className="TopRatedItems">
-//               <div className="dashboard-section-title">Top Rated Items</div>
-//               <ul className="top-rated-list">
-//                 {topRated.map((item, index) => (
-//                   <li className="top-rated-item" key={item.name + index}>
-//                     <div className="top-rated-details">
-//                       <div className="top-rated-div">
-//                         <img src={item.img} alt={item.name} className="top-rated-img" />
-//                         <div className="top-rated-name">{item.name}</div>
-//                       </div>
-//                       <div>
-//                         <div className="top-rated-price">{item.price}</div>
-//                         <div className="top-rated-rating">{item.rating}</div>
-//                       </div>
-//                     </div>
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-//             <div className="Revenue">
-//               <div className="dashboard-section-title">Revenue by Product</div>
-//               <ul className="revenue-list">
-//                 {revenueProducts.map((item) => (
-//                   <li className="revenue-item" key={item.name}>
-//                     <div className="revenue-name">{item.name}</div>
-//                     <div className="revenue-bar-bg">
-//                       <div
-//                         className="revenue-bar"
-//                         style={{ width: `${(item.value / 55467) * 100}%` }}
-//                       />
-//                     </div>
-//                     <div className="revenue-value">{item.value}</div>
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Home;
-
